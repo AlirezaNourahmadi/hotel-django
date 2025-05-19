@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت سرویس‌ها{% endblock %}
+{% block content %}
+<h2>🛎️ مدیریت سرویس‌ها</h2>
+
+<a href="{% url 'service_create' %}" class="button">➕ افزودن سرویس جدید</a>
+
+<table>
+    <tr>
+        <th>اتاق</th>
+        <th>نوع سرویس</th>
+        <th>وضعیت</th>
+        <th>کاربر اختصاص‌ یافته</th>
+        <th>تاریخ ثبت</th>
+        <th>عملیات</th>
+    </tr>
+    {% for service in services %}
+    <tr>
+        <td>{{ service.room }}</td>
+        <td>{{ service.service_type }}</td>
+        <td>{{ service.done|yesno:"انجام شده,در حال انجام" }}</td>
+        <td>{{ service.assigned_to }}</td>
+        <td>{{ service.requested_at }}</td>
+        <td>
+            <a href="{% url 'service_update' service.pk %}">✏️</a>
+            <a href="{% url 'service_delete' service.pk %}">🗑️</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">هیچ سرویسی یافت نشد.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

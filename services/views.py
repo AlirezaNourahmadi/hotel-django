@@ -7,13 +7,14 @@ from django.contrib.auth.decorators import login_required , user_passes_test
 # Create your views here.
 def is_manager(user):
     return user.is_authenticated and user.groups.filter(name = "manager").exists()
-
-@user_passes_test(is_manager)
+def is_staff(user):
+    return user.is_authenticated and user.groups.filter(name = "staff").exists()
+@user_passes_test(is_manager,is_staff)
 def service_list_view(request):
     services = Service.objects.select_related("room", "assigned_to").all()
     return render(request,"services/service_list.html",{"services":services})
 
-@user_passes_test(is_manager)
+@user_passes_test(is_manager,is_staff)
 def service_create_view(request):
     form = ServiceForm(request.POST or None)
     if form.is_valid():
@@ -21,7 +22,7 @@ def service_create_view(request):
         return redirect('service_list')
     return render(request, 'services/service_form.html', {'form': form})
 
-@user_passes_test(is_manager)
+@user_passes_test(is_manager,is_staff)
 def service_update_view(request, pk):
     service = get_object_or_404(Service, pk=pk)
     form = ServiceForm(request.POST or None, instance=service)
@@ -30,7 +31,7 @@ def service_update_view(request, pk):
         return redirect('service_list')
     return render(request, 'services/service_form.html', {'form': form})
 
-@user_passes_test(is_manager)
+@user_passes_test(is_manager,is_staff)
 def service_delete_view(request, pk):
     service = get_object_or_404(Service, pk=pk)
     if request.method == 'POST':
